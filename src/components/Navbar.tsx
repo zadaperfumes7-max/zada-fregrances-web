@@ -33,8 +33,9 @@ export default function Navbar() {
       try {
         await loginWithGoogle();
         toast.success("Logged in successfully");
-      } catch (error) {
-        toast.error("Error logging in");
+      } catch (error: any) {
+        console.error("Login error:", error);
+        toast.error(error.message || "Error logging in");
       }
     }
   };
