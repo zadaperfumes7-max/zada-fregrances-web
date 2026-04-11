@@ -1,0 +1,118 @@
+{
+  "entities": {
+    "products": {
+      "title": "Product",
+      "description": "A perfume product in the store",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the perfume" },
+        "category": { "type": "string", "description": "Category (e.g., Eau de Parfum)" },
+        "price": { "type": "number", "description": "Price in EGP" },
+        "image": { "type": "string", "description": "URL to the product image" },
+        "rating": { "type": "number", "description": "User rating" },
+        "description": { "type": "string", "description": "Product description" },
+        "stock": { "type": "integer", "description": "Available stock" },
+        "status": { "type": "string", "enum": ["active", "draft"], "description": "Product status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["name", "category", "price", "image"]
+    },
+    "users": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User email" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "photoURL": { "type": "string", "description": "User profile photo URL" },
+        "role": { "type": "string", "enum": ["admin", "customer"], "description": "User role" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" }
+      },
+      "required": ["uid", "email"]
+    },
+    "orders": {
+      "title": "Order",
+      "description": "Customer order information",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "UID of the customer" },
+        "customerInfo": { "type": "object", "description": "Shipping and contact details" },
+        "items": { "type": "array", "items": { "type": "object" }, "description": "List of ordered items" },
+        "total": { "type": "number", "description": "Total order amount" },
+        "subtotal": { "type": "number", "description": "Order subtotal" },
+        "discount": { "type": "number", "description": "Discount amount" },
+        "tax": { "type": "number", "description": "Tax amount" },
+        "shipping": { "type": "number", "description": "Shipping fee" },
+        "status": { "type": "string", "enum": ["pending", "processing", "shipped", "delivered", "cancelled"], "description": "Order status" },
+        "paymentStatus": { "type": "string", "description": "Payment status" },
+        "fulfillmentStatus": { "type": "string", "description": "Fulfillment status" },
+        "stockDecreased": { "type": "boolean", "description": "Whether stock has been decreased" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Order timestamp" }
+      },
+      "required": ["userId", "customerInfo", "items", "total", "status"]
+    },
+    "discounts": {
+      "title": "Discount",
+      "description": "Promotional discount codes",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "description": "The discount code (e.g., SAVE10)" },
+        "type": { "type": "string", "enum": ["percentage", "fixed"], "description": "Type of discount" },
+        "value": { "type": "number", "description": "The discount value" },
+        "active": { "type": "boolean", "description": "Whether the code is active" },
+        "expiryDate": { "type": "string", "format": "date-time", "description": "When the code expires" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["code", "type", "value", "active"]
+    },
+    "categories": {
+      "title": "Category",
+      "description": "Product categories",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the category" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["name"]
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Global store settings",
+      "type": "object",
+      "properties": {
+        "shippingFee": { "type": "number", "description": "Flat shipping fee" },
+        "taxRate": { "type": "number", "description": "Tax rate percentage" },
+        "currency": { "type": "string", "description": "Store currency (e.g., EGP)" },
+        "storeName": { "type": "string", "description": "Name of the store" },
+        "contactEmail": { "type": "string", "format": "email", "description": "Store contact email" }
+      }
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "products",
+      "description": "Collection of perfume products"
+    },
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profile documents"
+    },
+    "/orders/{orderId}": {
+      "schema": "orders",
+      "description": "Customer orders"
+    },
+    "/discounts/{discountId}": {
+      "schema": "discounts",
+      "description": "Promotional codes"
+    },
+    "/categories/{categoryId}": {
+      "schema": "categories",
+      "description": "Product categories"
+    },
+    "/settings/{settingId}": {
+      "schema": "settings",
+      "description": "Global settings"
+    }
+  }
+}
