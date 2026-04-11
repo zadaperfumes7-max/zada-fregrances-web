@@ -13,8 +13,8 @@
   body {
     @apply bg-[#050505] text-white antialiased;
     background: 
-      linear-gradient(rgba(5, 5, 5, 0.95), rgba(5, 5, 5, 0.95)),
-      url('/background1.png') no-repeat center center fixed;
+      linear-gradient(rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.85)),
+      url('./assets/background1.png') no-repeat center center fixed;
     background-size: cover;
     min-height: 100vh;
   }
