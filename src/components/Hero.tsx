@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { auth, loginWithGoogle } from "../firebase";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { useEffect, useState } from "react";
+import bgImage from "../assets/hero-background.png";
 
 export default function Hero() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -22,9 +23,13 @@ export default function Hero() {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/bg.png" 
+          src={bgImage} 
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1920&auto=format&fit=crop";
+          }}
           alt="Luxury Perfume" 
-          className="w-full h-full object-cover opacity-60 scale-105"
+          className="w-full h-full object-cover opacity-70 scale-105"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#050505]" />
