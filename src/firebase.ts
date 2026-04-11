@@ -4,7 +4,6 @@ import { getFirestore, doc, getDoc, setDoc, collection, query, where, onSnapshot
 import firebaseConfig from '../firebase-applet-config.json';
 
 // Initialize Firebase SDK
-console.log("Firebase Auth Domain:", firebaseConfig.authDomain);
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
