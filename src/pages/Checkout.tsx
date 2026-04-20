@@ -134,10 +134,12 @@ export default function Checkout() {
         },
         items: cart.map(item => ({
           id: item.id,
+          productId: item.productId,
           name: item.name,
           price: item.price,
           quantity: item.quantity,
-          image: item.image
+          image: item.image,
+          sizeLabel: item.sizeLabel || null
         })),
         subtotal: totalPrice,
         discount: {
@@ -360,10 +362,15 @@ export default function Checkout() {
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     </div>
                     <div className="flex-grow flex flex-col justify-center">
-                      <h4 className="font-serif leading-tight mb-1">{item.name}</h4>
+                      <h4 className="font-serif leading-tight mb-0.5">{item.name}</h4>
+                      {item.sizeLabel && (
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest font-bold mb-1">
+                          Size: {item.sizeLabel}
+                        </p>
+                      )}
                       <div className="flex justify-between items-center">
-                        <p className="text-white/40 text-sm">{item.quantity} × {item.price.toLocaleString()} EGP</p>
-                        <p className="font-bold">{(item.price * item.quantity).toLocaleString()} EGP</p>
+                        <p className="text-white/40 text-[10px] uppercase tracking-widest">{item.quantity} × {item.price.toLocaleString()} EGP</p>
+                        <p className="font-bold text-sm">{(item.price * item.quantity).toLocaleString()} EGP</p>
                       </div>
                     </div>
                   </div>

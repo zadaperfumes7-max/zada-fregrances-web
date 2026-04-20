@@ -82,73 +82,77 @@ export default function AdminDiscounts() {
 
   return (
     <AdminLayout>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <h1 className="text-2xl font-bold text-[#202223]">Discounts</h1>
-          <p className="text-[#5c5f62] text-sm">Create and manage promotional discount codes.</p>
+          <h1 className="text-4xl font-serif mb-2 text-white">Discounts</h1>
+          <p className="text-white/40 text-sm uppercase tracking-widest">Create and manage promotional discount codes.</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-slate-700 transition-all"
+          className="bg-white text-black px-8 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 hover:bg-silver transition-all shadow-xl shadow-white/5"
         >
           <Plus size={18} />
           Create discount
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#d2d5d9] shadow-sm overflow-hidden">
+      <div className="glass-dark rounded-[2.5rem] border border-white/5 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-[#f6f6f7] border-b border-[#d2d5d9]">
-              <th className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-[#5c5f62]">Discount Code</th>
-              <th className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-[#5c5f62]">Type</th>
-              <th className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-[#5c5f62]">Value</th>
-              <th className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-[#5c5f62]">Status</th>
-              <th className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-[#5c5f62]">Expiry</th>
-              <th className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-[#5c5f62] text-right">Actions</th>
+            <tr className="bg-white/[0.02] border-b border-white/5">
+              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Discount Code</th>
+              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Type</th>
+              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Value</th>
+              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Status</th>
+              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Expiry</th>
+              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#d2d5d9]">
+          <tbody className="divide-y divide-white/5">
             {discounts.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-[#5c5f62] italic text-sm">
+                <td colSpan={6} className="px-8 py-20 text-center text-white/20 italic text-sm uppercase tracking-widest">
                   No discount codes found.
                 </td>
               </tr>
             ) : (
               discounts.map((discount) => (
-                <tr key={discount.id} className="hover:bg-[#f9f9f9] transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Tag size={14} className="text-slate-400" />
-                      <span className="font-bold text-sm text-[#202223]">{discount.code}</span>
+                <tr key={discount.id} className="hover:bg-white/[0.03] transition-colors group">
+                  <td className="px-8 py-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 glass rounded-xl flex items-center justify-center text-silver/40 group-hover:text-silver transition-colors border border-white/5">
+                        <Tag size={16} />
+                      </div>
+                      <span className="font-bold text-base text-white">{discount.code}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#5c5f62] capitalize">{discount.type}</td>
-                  <td className="px-6 py-4 text-sm font-bold text-[#202223]">
+                  <td className="px-8 py-6 text-sm text-white/40 group-hover:text-white/60 transition-colors capitalize">{discount.type}</td>
+                  <td className="px-8 py-6 text-base font-bold text-white">
                     {discount.type === 'percentage' ? `${discount.value}%` : `${discount.value} EGP`}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-8 py-6">
                     <button
                       onClick={() => toggleStatus(discount.id, discount.active)}
-                      className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all ${
                         discount.active 
-                        ? 'bg-green-100 text-green-800 border-green-200' 
-                        : 'bg-red-100 text-red-800 border-red-200'
+                        ? 'bg-green-400/10 text-green-400 border-green-400/20' 
+                        : 'bg-red-400/10 text-red-400 border-red-400/20'
                       }`}
                     >
                       {discount.active ? 'Active' : 'Inactive'}
                     </button>
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#5c5f62]">
-                    {discount.expiryDate ? new Date(discount.expiryDate).toLocaleDateString() : 'No expiry'}
+                  <td className="px-8 py-6 text-sm text-white/40">
+                    {discount.expiryDate ? new Date(discount.expiryDate).toLocaleDateString() : (
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-white/20">No expiry</span>
+                    )}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-8 py-6 text-right">
                     <button
                       onClick={() => deleteDiscount(discount.id)}
-                      className="text-[#5c5f62] hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition-all"
+                      className="text-white/20 hover:text-red-400 p-2 hover:bg-red-400/10 rounded-xl transition-all"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={18} />
                     </button>
                   </td>
                 </tr>
@@ -167,92 +171,96 @@ export default function AdminDiscounts() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAddModal(false)}
-              className="absolute inset-0 bg-[#202223]/40 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
             />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 border border-[#d2d5d9]"
+              className="relative w-full max-w-lg glass-dark rounded-[3rem] shadow-2xl p-10 md:p-12 border border-white/10"
             >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#202223]">Create discount code</h2>
-                <button onClick={() => setShowAddModal(false)} className="text-[#5c5f62] hover:text-[#202223]">
-                  <X size={20} />
+              <div className="flex items-center justify-between mb-10">
+                <div>
+                  <h2 className="text-3xl font-serif text-white">Create discount</h2>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mt-1">Configure a new promotional code.</p>
+                </div>
+                <button onClick={() => setShowAddModal(false)} className="text-white/20 hover:text-white p-2 hover:bg-white/10 rounded-full transition-all">
+                  <X size={24} />
                 </button>
               </div>
 
-              <form onSubmit={handleAddDiscount} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#5c5f62] uppercase tracking-widest mb-1.5">Discount Code</label>
+              <form onSubmit={handleAddDiscount} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-4">Discount Code</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. SAVE20"
-                    className="w-full bg-[#f6f6f7] border border-[#d2d5d9] rounded-lg px-4 py-2 text-sm focus:ring-2 ring-slate-400 outline-none transition-all uppercase"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white uppercase"
                     value={newDiscount.code}
                     onChange={(e) => setNewDiscount({ ...newDiscount, code: e.target.value })}
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-[#5c5f62] uppercase tracking-widest mb-1.5">Type</label>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-4">Type</label>
                     <select
-                      className="w-full bg-[#f6f6f7] border border-[#d2d5d9] rounded-lg px-4 py-2 text-sm focus:ring-2 ring-slate-400 outline-none transition-all"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white appearance-none cursor-pointer"
                       value={newDiscount.type}
                       onChange={(e) => setNewDiscount({ ...newDiscount, type: e.target.value })}
                     >
-                      <option value="percentage">Percentage</option>
-                      <option value="fixed">Fixed Amount</option>
+                      <option value="percentage" className="bg-black">Percentage</option>
+                      <option value="fixed" className="bg-black">Fixed Amount</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-[#5c5f62] uppercase tracking-widest mb-1.5">Value</label>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-4">Value</label>
                     <input
                       type="number"
                       required
-                      className="w-full bg-[#f6f6f7] border border-[#d2d5d9] rounded-lg px-4 py-2 text-sm focus:ring-2 ring-slate-400 outline-none transition-all"
+                      placeholder="e.g. 20"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white"
                       value={newDiscount.value}
                       onChange={(e) => setNewDiscount({ ...newDiscount, value: parseFloat(e.target.value) })}
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-[#5c5f62] uppercase tracking-widest mb-1.5">Expiry Date (Optional)</label>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-4">Expiry Date (Optional)</label>
                   <input
                     type="date"
-                    className="w-full bg-[#f6f6f7] border border-[#d2d5d9] rounded-lg px-4 py-2 text-sm focus:ring-2 ring-slate-400 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white appearance-none cursor-pointer"
                     value={newDiscount.expiryDate}
                     onChange={(e) => setNewDiscount({ ...newDiscount, expiryDate: e.target.value })}
                   />
                 </div>
 
-                <div className="flex items-center gap-2 pt-2">
+                <div className="flex items-center gap-3 pt-2 px-4 py-3 glass rounded-2xl border border-white/5">
                   <input
                     type="checkbox"
                     id="active"
                     checked={newDiscount.active}
                     onChange={(e) => setNewDiscount({ ...newDiscount, active: e.target.checked })}
-                    className="w-4 h-4 rounded border-[#d2d5d9] text-slate-800 focus:ring-slate-400"
+                    className="w-5 h-5 rounded-lg border-white/10 bg-white/5 text-silver focus:ring-silver/50"
                   />
-                  <label htmlFor="active" className="text-sm text-[#202223]">Set as active immediately</label>
+                  <label htmlFor="active" className="text-xs font-bold text-white/60 uppercase tracking-widest cursor-pointer">Set as active immediately</label>
                 </div>
 
-                <div className="pt-4 flex gap-3">
+                <div className="pt-8 flex gap-4 border-t border-white/5">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="flex-1 py-2 border border-[#d2d5d9] rounded-lg font-bold text-sm text-[#202223] hover:bg-[#f6f6f7] transition-all"
+                    className="flex-1 py-4 glass rounded-2xl font-bold text-[10px] text-white/40 uppercase tracking-widest hover:text-white hover:bg-white/5 transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-2 bg-slate-800 text-white rounded-lg font-bold text-sm hover:bg-slate-700 transition-all"
+                    className="flex-1 py-4 bg-white text-black rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-silver transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-2"
                   >
-                    Create discount
+                    Create Code
                   </button>
                 </div>
               </form>

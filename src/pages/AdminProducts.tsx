@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { Plus, Search, Edit2, Trash2, MoreVertical, X, Loader2, Tag, Check, ChevronDown, Eye, EyeOff, DollarSign } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, MoreVertical, X, Loader2, Tag, Check, ChevronDown, Eye, EyeOff, DollarSign, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { collection, onSnapshot, query, orderBy, addDoc, deleteDoc, doc, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { motion, AnimatePresence } from 'motion/react';
+
+interface ProductSize {
+  label: string;
+  price: number;
+}
 
 interface Product {
   id: string;
   name: string;
   category: string;
   price: number;
-  image: string;
+  image: string; // Cover image (first from images array)
+  images?: string[]; // Multiple images
   stock: number;
   status: 'active' | 'draft';
   description?: string;
+  sizes?: ProductSize[];
 }
 
 export default function AdminProducts() {
@@ -35,9 +42,11 @@ export default function AdminProducts() {
     category: '',
     price: '',
     image: '',
+    images: [] as string[],
     stock: '',
     description: '',
-    status: 'active' as 'active' | 'draft'
+    status: 'active' as 'active' | 'draft',
+    sizes: [] as { label: string; price: string }[]
   });
 
   useEffect(() => {
@@ -73,13 +82,25 @@ export default function AdminProducts() {
         category: product.category,
         price: product.price.toString(),
         image: product.image,
+        images: product.images || [product.image].filter(Boolean),
         stock: product.stock.toString(),
         description: product.description || '',
-        status: product.status || 'active'
+        status: product.status || 'active',
+        sizes: product.sizes?.map(s => ({ label: s.label, price: s.price.toString() })) || []
       });
     } else {
       setEditingProduct(null);
-      setProductForm({ name: '', category: '', price: '', image: '', stock: '', description: '', status: 'active' });
+      setProductForm({ 
+        name: '', 
+        category: '', 
+        price: '', 
+        image: '', 
+        images: [],
+        stock: '', 
+        description: '', 
+        status: 'active',
+        sizes: [] 
+      });
     }
     setIsModalOpen(true);
   };
@@ -93,10 +114,24 @@ export default function AdminProducts() {
     
     setLoading(true);
     try {
+      const sizes = productForm.sizes.map(s => ({
+        label: s.label,
+        price: parseFloat(s.price)
+      })).filter(s => s.label && !isNaN(s.price));
+
+      // If sizes exist, use the first size price as the default price
+      const finalPrice = sizes.length > 0 ? sizes[0].price : parseFloat(productForm.price);
+
       const data = {
-        ...productForm,
-        price: parseFloat(productForm.price),
+        name: productForm.name,
+        category: productForm.category,
+        description: productForm.description,
+        status: productForm.status,
+        image: productForm.images[0] || productForm.image, // First image is cover
+        images: productForm.images,
+        price: finalPrice,
         stock: parseInt(productForm.stock),
+        sizes: sizes,
         updatedAt: serverTimestamp()
       };
 
@@ -316,7 +351,12 @@ export default function AdminProducts() {
                         </div>
                         <div className="min-w-0">
                           <p className="font-serif text-base text-white truncate">{product.name}</p>
-                          <p className="text-[10px] text-silver font-bold uppercase tracking-widest">{product.price.toLocaleString()} EGP</p>
+                          <p className="text-[10px] text-silver font-bold uppercase tracking-widest">
+                            {product.sizes && product.sizes.length > 0
+                              ? `${Math.min(...product.sizes.map(s => s.price)).toLocaleString()} - ${Math.max(...product.sizes.map(s => s.price)).toLocaleString()} EGP (${product.sizes.length} sizes)`
+                              : `${product.price.toLocaleString()} EGP`
+                            }
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -429,30 +469,59 @@ export default function AdminProducts() {
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-4">Product Imagery</label>
-                      <div className="flex flex-col gap-4">
-                        {productForm.image ? (
-                          <div className="relative w-full h-80 rounded-[2rem] overflow-hidden border border-white/10 bg-white/5 group">
-                            <img src={productForm.image} alt="Preview" className="w-full h-full object-contain" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                      <div className="flex items-center justify-between ml-4">
+                        <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Product Gallery</label>
+                        <span className="text-[10px] text-white/20 uppercase font-bold tracking-widest">{productForm.images.length} / 6 Images</span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {productForm.images.map((img, index) => (
+                          <motion.div 
+                            key={index}
+                            layout
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="relative aspect-square rounded-2xl overflow-hidden glass border border-white/10 group"
+                          >
+                            <img src={img} alt={`Gallery ${index}`} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                              {index !== 0 && (
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const newImages = [...productForm.images];
+                                    [newImages[index], newImages[0]] = [newImages[0], newImages[index]];
+                                    setProductForm({...productForm, images: newImages});
+                                  }}
+                                  className="p-2 bg-white text-black rounded-lg hover:scale-110 transition-all"
+                                  title="Set as Main Image"
+                                >
+                                  <Star size={14} className="fill-current" />
+                                </button>
+                              )}
                               <button 
                                 type="button"
-                                onClick={() => setProductForm({...productForm, image: ''})}
-                                className="p-4 bg-red-400 text-white rounded-full shadow-xl hover:scale-110 transition-all"
+                                onClick={() => {
+                                  const newImages = productForm.images.filter((_, i) => i !== index);
+                                  setProductForm({...productForm, images: newImages});
+                                }}
+                                className="p-2 bg-red-400 text-white rounded-lg hover:scale-110 transition-all"
                               >
-                                <Trash2 size={24} />
+                                <Trash2 size={14} />
                               </button>
                             </div>
-                          </div>
-                        ) : (
-                          <label className="w-full h-80 rounded-[2rem] border-2 border-dashed border-white/10 hover:border-silver/50 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer bg-white/5 group">
-                            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-silver group-hover:text-black transition-all">
-                              <Plus size={24} />
-                            </div>
-                            <div className="text-center">
-                              <span className="text-xs font-bold text-white/60 uppercase tracking-widest block mb-1">Upload Image</span>
-                              <span className="text-[10px] text-white/20 uppercase tracking-widest">JPG, PNG or WebP (Max 800KB)</span>
-                            </div>
+                            {index === 0 && (
+                              <div className="absolute top-2 left-2 bg-silver text-black text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest shadow-lg">
+                                Cover
+                              </div>
+                            )}
+                          </motion.div>
+                        ))}
+                        
+                        {productForm.images.length < 6 && (
+                          <label className="aspect-square rounded-2xl border-2 border-dashed border-white/10 hover:border-silver/50 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer bg-white/5 group">
+                            <Plus size={20} className="text-white/20 group-hover:text-silver transition-all" />
+                            <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest group-hover:text-silver">Add Image</span>
                             <input 
                               type="file" 
                               accept="image/*"
@@ -466,7 +535,10 @@ export default function AdminProducts() {
                                   }
                                   const reader = new FileReader();
                                   reader.onloadend = () => {
-                                    setProductForm({...productForm, image: reader.result as string});
+                                    setProductForm({
+                                      ...productForm, 
+                                      images: [...productForm.images, reader.result as string]
+                                    });
                                   };
                                   reader.readAsDataURL(file);
                                 }
@@ -474,16 +546,28 @@ export default function AdminProducts() {
                             />
                           </label>
                         )}
-                        <div className="relative">
-                          <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
-                          <input 
-                            type="url" 
-                            placeholder="Or paste an external image URL"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white"
-                            value={productForm.image.startsWith('data:') ? '' : productForm.image}
-                            onChange={e => setProductForm({...productForm, image: e.target.value})}
-                          />
-                        </div>
+                      </div>
+
+                      <div className="relative mt-4">
+                        <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <input 
+                          type="url" 
+                          placeholder="Or paste an image URL to add..."
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const url = (e.target as HTMLInputElement).value.trim();
+                              if (url && productForm.images.length < 6) {
+                                setProductForm({
+                                  ...productForm,
+                                  images: [...productForm.images, url]
+                                });
+                                (e.target as HTMLInputElement).value = '';
+                              }
+                            }
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -549,14 +633,80 @@ export default function AdminProducts() {
                       </div>
                       <div className="space-y-6">
                         <div className="space-y-2">
-                          <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-2">Price (EGP)</label>
+                          <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-2">Base Price (EGP)</label>
                           <input 
-                            required
+                            required={productForm.sizes.length === 0}
                             type="number" 
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-silver/50 transition-all text-white disabled:opacity-50"
                             value={productForm.price}
                             onChange={e => setProductForm({...productForm, price: e.target.value})}
+                            placeholder={productForm.sizes.length > 0 ? "Using size prices" : "e.g. 1500"}
                           />
+                        </div>
+
+                        {/* Sizes Section */}
+                        <div className="space-y-4 pt-4 border-t border-white/5">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-2">Product Sizes</label>
+                            <button
+                              type="button"
+                              onClick={() => setProductForm({
+                                ...productForm,
+                                sizes: [...productForm.sizes, { label: '', price: '' }]
+                              })}
+                              className="text-[10px] font-bold text-silver hover:text-white uppercase tracking-widest flex items-center gap-1 transition-colors"
+                            >
+                              <Plus size={12} /> Add Size
+                            </button>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            {productForm.sizes.map((size, index) => (
+                              <div key={index} className="flex gap-2 items-start">
+                                <div className="flex-grow space-y-1">
+                                  <input 
+                                    required
+                                    type="text"
+                                    placeholder="Label (e.g. 50ml)"
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-silver/50 text-white"
+                                    value={size.label}
+                                    onChange={e => {
+                                      const newSizes = [...productForm.sizes];
+                                      newSizes[index].label = e.target.value;
+                                      setProductForm({ ...productForm, sizes: newSizes });
+                                    }}
+                                  />
+                                </div>
+                                <div className="w-24 space-y-1 text-right">
+                                  <input 
+                                    required
+                                    type="number"
+                                    placeholder="Price"
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-silver/50 text-white"
+                                    value={size.price}
+                                    onChange={e => {
+                                      const newSizes = [...productForm.sizes];
+                                      newSizes[index].price = e.target.value;
+                                      setProductForm({ ...productForm, sizes: newSizes });
+                                    }}
+                                  />
+                                </div>
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const newSizes = productForm.sizes.filter((_, i) => i !== index);
+                                    setProductForm({ ...productForm, sizes: newSizes });
+                                  }}
+                                  className="p-2 text-white/20 hover:text-red-400 transition-colors"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ))}
+                            {productForm.sizes.length === 0 && (
+                              <p className="text-[10px] text-white/20 italic ml-2">No sizes added. Single price will be used.</p>
+                            )}
+                          </div>
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-2">Inventory Level</label>

@@ -11,10 +11,11 @@ export default function Wishlist() {
   const { addToCart, setIsCartOpen } = useCart();
 
   const handleMoveToCart = (product: any) => {
-    addToCart(product);
+    const sizeToUse = product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined;
+    addToCart(product, sizeToUse);
     removeFromWishlist(product.id);
     setIsCartOpen(true);
-    toast.success(`${product.name} moved to cart!`);
+    toast.success(`${product.name} moved to bag!`);
   };
 
   if (loading) {
@@ -100,7 +101,11 @@ export default function Wishlist() {
                       Move to Bag
                     </button>
                     <button 
-                      onClick={() => addToCart(product)}
+                      onClick={() => {
+                        const sizeToUse = product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined;
+                        addToCart(product, sizeToUse);
+                        setIsCartOpen(true);
+                      }}
                       className="p-4 glass rounded-2xl hover:bg-white/10 transition-all text-white/60 hover:text-white"
                       title="Add to Bag"
                     >

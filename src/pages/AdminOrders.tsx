@@ -62,8 +62,9 @@ export default function AdminOrders() {
         if (!orderData?.stockDecreased) {
           const items = orderData?.items || [];
           for (const item of items) {
-            if (item.id) {
-              const productRef = doc(db, "products", item.id);
+            const productId = item.productId || item.id;
+            if (productId) {
+              const productRef = doc(db, "products", productId);
               await updateDoc(productRef, {
                 stock: increment(-item.quantity)
               });
@@ -388,6 +389,11 @@ export default function AdminOrders() {
                       </div>
                       <div className="flex-grow min-w-0">
                         <p className="text-sm font-serif text-white truncate">{item.name}</p>
+                        {item.sizeLabel && (
+                          <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+                            Size: {item.sizeLabel}
+                          </p>
+                        )}
                         <p className="text-[10px] text-silver font-bold uppercase tracking-widest">{item.quantity} × {item.price.toLocaleString()} EGP</p>
                       </div>
                     </div>

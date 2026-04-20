@@ -89,6 +89,11 @@ export default function CartDrawer() {
                               <Trash2 size={16} />
                             </button>
                           </div>
+                          {item.sizeLabel && (
+                            <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-1">
+                              Size: {item.sizeLabel}
+                            </p>
+                          )}
                           <p className="text-silver font-medium">{item.price.toLocaleString()} EGP</p>
                         </div>
                         
