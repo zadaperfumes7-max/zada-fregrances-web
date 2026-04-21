@@ -49,13 +49,13 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-widest mb-8">Newsletter</h4>
             <p className="text-white/50 font-light mb-6">Join our circle for exclusive offers and scent stories.</p>
-            <div className="flex gap-2">
+            <div className="relative max-w-sm lg:max-w-none">
               <input 
                 type="email" 
                 placeholder="Your email" 
-                className="bg-white/5 border border-white/10 rounded-full px-6 py-3 flex-grow focus:outline-none focus:border-white/30 transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-full pl-6 pr-28 py-4 text-sm focus:outline-none focus:border-white/50 transition-all placeholder:text-white/20"
               />
-              <button className="bg-white text-black rounded-full px-6 py-3 font-bold hover:bg-orange-500 hover:text-white transition-colors">
+              <button className="absolute right-1.5 top-1.5 bottom-1.5 bg-white text-black rounded-full px-6 text-[10px] font-bold uppercase tracking-widest hover:bg-silver transition-all">
                 Join
               </button>
             </div>

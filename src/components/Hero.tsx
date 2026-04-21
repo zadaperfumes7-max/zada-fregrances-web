@@ -19,7 +19,7 @@ export default function Hero() {
   const isAdmin = user?.email === "zada.perfumes7@gmail.com";
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden pt-10 md:pt-20">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -29,52 +29,43 @@ export default function Hero() {
             target.src = "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1920&auto=format&fit=crop";
           }}
           alt="Luxury Perfume" 
-          className="w-full h-full object-cover opacity-70 scale-105"
+          className="w-full h-full object-cover opacity-70 scale-110"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#050505]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="glass-dark p-12 md:p-20 rounded-[3rem] max-w-4xl mx-auto"
+          className="glass-dark p-8 md:p-20 rounded-[2.5rem] md:rounded-[3rem] max-w-4xl mx-auto backdrop-blur-2xl border border-white/5"
         >
           <motion.span 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-silver uppercase tracking-[0.3em] text-xs font-bold mb-6 block"
+            className="text-silver uppercase tracking-[0.3em] text-[10px] md:text-xs font-bold mb-4 md:mb-6 block"
           >
             Exquisite Fragrances
           </motion.span>
-          <h2 className="text-5xl md:text-8xl font-serif font-light mb-8 leading-tight">
+          <h2 className="text-4xl md:text-8xl font-serif font-light mb-6 md:mb-8 leading-tight">
             The Essence of <br />
             <span className="italic font-normal">Pure Elegance</span>
           </h2>
-          <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light leading-relaxed">
-            Discover a world where scent meets soul. Zada Fragrances brings you the most exclusive collection of artisanal perfumes.
+          <p className="text-white/60 text-sm md:text-xl max-w-2xl mx-auto mb-8 md:mb-10 font-light leading-relaxed">
+            Discover a world where scent meets soul. ZADA Fragrances brings you the most exclusive collection of artisanal perfumes.
           </p>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <Link to="/shop" className="px-10 py-4 bg-white text-black rounded-full font-bold hover:bg-silver hover:text-black transition-all duration-300 flex items-center gap-2 group">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
+            <Link to="/shop" className="w-full md:w-auto px-10 py-4 bg-white text-black rounded-full font-bold hover:bg-silver hover:text-black transition-all duration-300 flex items-center justify-center gap-2 group text-sm md:text-base">
               Shop Collection
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
             
-            {isAdmin && (
-              <Link to="/admin" className="px-10 py-4 glass rounded-full font-bold hover:bg-silver/20 transition-all duration-300 flex items-center gap-2 text-silver">
-                <ShieldCheck size={18} />
-                Admin Dashboard
-              </Link>
-            )}
-            
-            {!isAdmin && (
-              <Link to="/shop" className="px-10 py-4 glass rounded-full font-bold hover:bg-white/20 transition-all duration-300">
-                View Lookbook
-              </Link>
-            )}
+            <Link to="/shop" className="w-full md:w-auto px-10 py-4 glass rounded-full font-bold hover:bg-white/20 transition-all duration-300 text-sm md:text-base">
+              View Lookbook
+            </Link>
           </div>
         </motion.div>
       </div>

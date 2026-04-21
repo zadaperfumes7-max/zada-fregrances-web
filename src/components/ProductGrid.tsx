@@ -123,7 +123,7 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
         {filteredProducts.map((product, index) => {
           const isWishlisted = isInWishlist(product.id);
           return (
@@ -135,9 +135,9 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
               viewport={{ once: true }}
               className="group"
             >
-              <div className="glass rounded-[2rem] overflow-hidden p-4 h-full flex flex-col transition-all duration-500 group-hover:bg-white/15">
+              <div className="glass rounded-[1.5rem] md:rounded-[2rem] overflow-hidden p-2 md:p-4 h-full flex flex-col transition-all duration-500 group-hover:bg-white/15">
                 <div 
-                  className="relative aspect-[4/5] rounded-[1.5rem] overflow-hidden mb-6 cursor-pointer"
+                  className="relative aspect-[4/5] rounded-[1rem] md:rounded-[1.5rem] overflow-hidden mb-3 md:mb-6 cursor-pointer"
                   onClick={() => setSelectedProduct(product)}
                 >
                   <AnimatePresence mode="wait">
@@ -191,15 +191,15 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
                   </div>
                 </div>
               
-                <div className="px-2 flex-grow">
-                  <span className="text-white/40 text-[10px] uppercase tracking-widest font-bold mb-2 block">
+                <div className="px-1 md:px-2 flex-grow">
+                  <span className="text-white/40 text-[8px] md:text-[10px] uppercase tracking-widest font-bold mb-1 md:mb-2 block">
                     {product.category}
                   </span>
-                  <h4 className="text-xl font-serif mb-2 group-hover:text-glow transition-all">
+                  <h4 className="text-sm md:text-xl font-serif mb-1 md:mb-2 group-hover:text-glow transition-all line-clamp-1 md:line-clamp-none">
                     {product.name}
                   </h4>
-                  <div className="flex flex-col gap-3">
-                    <p className="text-lg font-light text-white/80">
+                  <div className="flex flex-col gap-2 md:gap-3">
+                    <p className="text-sm md:text-lg font-light text-white/80">
                       {product.sizes && product.sizes.length > 0
                         ? `${(selectedSizes[product.id]?.price || product.price).toLocaleString()} EGP`
                         : `${product.price.toLocaleString()} EGP`
@@ -207,7 +207,7 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
                     </p>
                     
                     {product.sizes && product.sizes.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="hidden md:flex flex-wrap gap-2">
                         {product.sizes.map((size) => (
                           <button
                             key={size.label}
@@ -228,10 +228,10 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
 
               <button 
                 onClick={() => handleAddToCart(product)}
-                className="mt-6 w-full py-4 glass rounded-2xl flex items-center justify-center gap-2 font-bold hover:bg-white hover:text-black transition-all duration-300"
+                className="mt-3 md:mt-6 w-full py-3 md:py-4 glass rounded-xl md:rounded-2xl flex items-center justify-center gap-2 font-bold text-xs md:text-base hover:bg-white hover:text-black transition-all duration-300"
               >
-                <ShoppingCart size={18} />
-                Add to Cart
+                <ShoppingCart size={16} />
+                <span className="hidden md:inline">Add to Cart</span>
               </button>
             </div>
           </motion.div>
@@ -243,7 +243,7 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
     {/* Quick View Modal */}
     <AnimatePresence>
       {selectedProduct && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 md:p-12">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-12">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -256,7 +256,7 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-6xl glass-dark rounded-[3rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row max-h-[90vh] border border-white/10"
+            className="relative w-full h-full md:h-auto md:max-w-6xl glass-dark rounded-none md:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row md:max-h-[90vh] border-0 md:border md:border-white/10"
           >
             <button 
               onClick={() => setSelectedProduct(null)}
@@ -266,8 +266,8 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
             </button>
 
             {/* Gallery Section */}
-            <div className="w-full lg:w-1/2 bg-black/40 relative">
-              <div className="h-[400px] lg:h-full overflow-hidden">
+            <div className="w-full lg:w-1/2 bg-black/40 relative h-[50vh] md:h-auto">
+              <div className="h-full overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.img 
                     key={activeImageIndex[selectedProduct.id] || 0}
@@ -276,7 +276,7 @@ export default function ProductGrid({ category = "All", searchTerm = "", sortBy 
                     exit={{ opacity: 0, x: -20 }}
                     src={selectedProduct.images?.[activeImageIndex[selectedProduct.id] || 0] || selectedProduct.image} 
                     alt={selectedProduct.name}
-                    className="w-full h-full object-contain p-12"
+                    className="w-full h-full object-contain p-6 md:p-12"
                     referrerPolicy="no-referrer"
                   />
                 </AnimatePresence>

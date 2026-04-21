@@ -60,9 +60,9 @@ export default function Home() {
       <ProductGrid />
 
       {/* Brand Story Section */}
-      <section className="py-24 px-6">
-        <div className="max-w-7xl mx-auto glass rounded-[3rem] overflow-hidden flex flex-col lg:flex-row">
-          <div className="lg:w-1/2 h-[400px] lg:h-auto">
+      <section className="py-12 md:py-24 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto glass rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col lg:flex-row">
+          <div className="lg:w-1/2 h-[300px] md:h-[400px] lg:h-auto">
             <img 
               src="https://images.unsplash.com/photo-1615484477778-ca3b77940c25?auto=format&fit=crop&q=80&w=1200" 
               alt="Perfume Making" 
@@ -70,13 +70,13 @@ export default function Home() {
               referrerPolicy="no-referrer"
             />
           </div>
-          <div className="lg:w-1/2 p-12 md:p-20 flex flex-col justify-center">
-            <h3 className="text-silver uppercase tracking-[0.2em] text-xs font-bold mb-6">Our Philosophy</h3>
-            <h2 className="text-4xl md:text-5xl font-serif mb-8 leading-tight">Crafted with <br /><span className="italic">Soul & Science</span></h2>
-            <p className="text-white/60 text-lg font-light leading-relaxed mb-10">
-              At Zada, we believe that a fragrance is more than just a scent—it's a signature, a memory, and an extension of your identity. Our master perfumers blend traditional techniques with modern innovation to create olfactory masterpieces.
+          <div className="lg:w-1/2 p-8 md:p-20 flex flex-col justify-center">
+            <h3 className="text-silver uppercase tracking-[0.2em] text-[10px] md:text-xs font-bold mb-4 md:mb-6">Our Philosophy</h3>
+            <h2 className="text-3xl md:text-5xl font-serif mb-6 md:mb-8 leading-tight">Crafted with <br /><span className="italic">Soul & Science</span></h2>
+            <p className="text-white/60 text-base md:text-lg font-light leading-relaxed mb-8 md:mb-10">
+              At Zada, we believe that a fragrance is more than just a scent—it's a signature, a memory, and an extension of your identity.
             </p>
-            <Link to="/shop" className="self-start px-10 py-4 glass rounded-full font-bold hover:bg-white hover:text-black transition-all duration-300">
+            <Link to="/shop" className="self-start px-8 md:px-10 py-3 md:py-4 glass rounded-full font-bold text-xs md:text-base hover:bg-white hover:text-black transition-all duration-300">
               Read Our Story
             </Link>
           </div>

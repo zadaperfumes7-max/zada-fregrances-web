@@ -20,6 +20,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import CartDrawer from "./components/CartDrawer";
 import CinematicIntro from "./components/CinematicIntro";
 import Wishlist from "./pages/Wishlist";
+import MobileNav from "./components/MobileNav";
 
 function PageWrapper({ children, showNav = true }: { children: React.ReactNode, showNav?: boolean }) {
   return (
@@ -110,7 +111,7 @@ export default function App() {
     <Router>
       <WishlistProvider>
         <CartProvider>
-          <div className="relative min-h-screen selection:bg-orange-500/30">
+          <div className="relative min-h-screen selection:bg-silver/30 pb-20 md:pb-0">
           <AnimatePresence>
             {showIntro && (
               <CinematicIntro onComplete={handleIntroComplete} />
@@ -118,6 +119,7 @@ export default function App() {
           </AnimatePresence>
           <Toaster position="top-center" expand={false} richColors />
           <CartDrawer />
+          <MobileNav />
           <AnimatedRoutes />
         </div>
       </CartProvider>
