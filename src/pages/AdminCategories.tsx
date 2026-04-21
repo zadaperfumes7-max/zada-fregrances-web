@@ -54,14 +54,25 @@ export default function AdminCategories() {
 
     setSaving(true);
     try {
+      const trimmedName = categoryName.trim();
+      const isDuplicate = categories.some(cat => 
+        cat.name.toLowerCase() === trimmedName.toLowerCase() && cat.id !== editingCategory?.id
+      );
+
+      if (isDuplicate) {
+        toast.error("A category with this name already exists");
+        setSaving(false);
+        return;
+      }
+
       if (editingCategory) {
         await updateDoc(doc(db, "categories", editingCategory.id), {
-          name: categoryName.trim()
+          name: trimmedName
         });
         toast.success("Category updated");
       } else {
         await addDoc(collection(db, "categories"), {
-          name: categoryName.trim(),
+          name: trimmedName,
           createdAt: serverTimestamp()
         });
         toast.success("Category added");

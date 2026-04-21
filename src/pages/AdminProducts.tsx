@@ -28,6 +28,55 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const compressImage = (base64Str: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!base64Str || !base64Str.startsWith('data:image')) {
+        resolve(base64Str);
+        return;
+      }
+      
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Luxury standard: Balanced resolution for Firestore limits
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(base64Str);
+          return;
+        }
+        
+        ctx.fillStyle = 'white'; 
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // JPEG is significantly smaller than PNG Base64 and is appropriate for luxury product shots
+        resolve(canvas.toDataURL('image/jpeg', 0.5));
+      };
+      img.onerror = (error) => reject(error);
+    });
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLowStock, setFilterLowStock] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -114,26 +163,49 @@ export default function AdminProducts() {
     
     setLoading(true);
     try {
+      const parsedStock = parseInt(productForm.stock) || 0;
+      const basePrice = parseFloat(productForm.price) || 0;
+
       const sizes = productForm.sizes.map(s => ({
         label: s.label,
-        price: parseFloat(s.price)
+        price: parseFloat(s.price) || 0
       })).filter(s => s.label && !isNaN(s.price));
 
       // If sizes exist, use the first size price as the default price
-      const finalPrice = sizes.length > 0 ? sizes[0].price : parseFloat(productForm.price);
+      const finalPrice = sizes.length > 0 ? sizes[0].price : basePrice;
 
       const data = {
-        name: productForm.name,
+        name: productForm.name.trim(),
         category: productForm.category,
-        description: productForm.description,
+        description: productForm.description.trim(),
         status: productForm.status,
-        image: productForm.images[0] || productForm.image, // First image is cover
+        image: productForm.images[0] || '', // First image is cover
         images: productForm.images,
         price: finalPrice,
-        stock: parseInt(productForm.stock),
+        stock: parsedStock,
         sizes: sizes,
         updatedAt: serverTimestamp()
       };
+
+      if (!data.name) {
+        toast.error("Product name is required");
+        setLoading(false);
+        return;
+      }
+
+      if (data.images.length === 0) {
+        toast.error("At least one image is required");
+        setLoading(false);
+        return;
+      }
+
+      // Check final payload size (Firestore limit is 1MB)
+      const approxSize = JSON.stringify(data).length;
+      if (approxSize > 950000) {
+        toast.error("Total product data (including images) is too large. Please use fewer or smaller images.");
+        setLoading(false);
+        return;
+      }
 
       if (editingProduct) {
         await updateDoc(doc(db, "products", editingProduct.id), data);
@@ -526,19 +598,25 @@ export default function AdminProducts() {
                               type="file" 
                               accept="image/*"
                               className="hidden"
-                              onChange={(e) => {
+                              onChange={async (e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
-                                  if (file.size > 800000) {
-                                    toast.error("Image too large. Please choose an image under 800KB.");
-                                    return;
-                                  }
                                   const reader = new FileReader();
-                                  reader.onloadend = () => {
-                                    setProductForm({
-                                      ...productForm, 
-                                      images: [...productForm.images, reader.result as string]
-                                    });
+                                  reader.onloadend = async () => {
+                                    try {
+                                      const base64 = reader.result as string;
+                                      setLoading(true);
+                                      const compressed = await compressImage(base64);
+                                      setProductForm({
+                                        ...productForm, 
+                                        images: [...productForm.images, compressed]
+                                      });
+                                    } catch (err) {
+                                      console.error("Compression error:", err);
+                                      toast.error("Failed to process image");
+                                    } finally {
+                                      setLoading(false);
+                                    }
                                   };
                                   reader.readAsDataURL(file);
                                 }
@@ -733,7 +811,7 @@ export default function AdminProducts() {
                   </button>
                   <button 
                     type="submit"
-                    disabled={loading || !productForm.image}
+                    disabled={loading || !productForm.name.trim() || !productForm.category || productForm.images.length === 0}
                     className="px-10 py-4 bg-white text-black rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-silver hover:text-black transition-all shadow-xl shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
                   >
                     {loading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
