@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
 import ProductGrid from "../components/ProductGrid";
 import SEO from "../components/SEO";
+import philosophyImg from "../assets/philosophy.png";
 
 export default function Home() {
   return (
@@ -64,8 +65,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto glass rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col lg:flex-row">
           <div className="lg:w-1/2 h-[300px] md:h-[400px] lg:h-auto">
             <img 
-              src="https://images.unsplash.com/photo-1615484477778-ca3b77940c25?auto=format&fit=crop&q=80&w=1200" 
-              alt="Perfume Making" 
+              src={philosophyImg} 
+              alt="Luxury Perfume Crafting" 
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
