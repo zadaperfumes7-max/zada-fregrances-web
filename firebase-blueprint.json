@@ -87,6 +87,16 @@
         "storeName": { "type": "string", "description": "Name of the store" },
         "contactEmail": { "type": "string", "format": "email", "description": "Store contact email" }
       }
+    },
+    "wishlists": {
+      "title": "Wishlist",
+      "description": "User's wishlist items",
+      "type": "object",
+      "properties": {
+        "items": { "type": "array", "items": { "type": "object" }, "description": "List of product IDs or product objects" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["items"]
     }
   },
   "firestore": {
@@ -113,6 +123,10 @@
     "/settings/{settingId}": {
       "schema": "settings",
       "description": "Global settings"
+    },
+    "/wishlists/{userId}": {
+      "schema": "wishlists",
+      "description": "User wishlists"
     }
   }
 }
