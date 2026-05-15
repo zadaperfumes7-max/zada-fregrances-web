@@ -1,25 +1,28 @@
-# Security Specification - ZADA Perfumes
+# Firebase Security Specification
 
-## Data Invariants
-1. A user can only see and manage their own wishlist and orders.
-2. Products, Categories, and Settings are publicly readable.
-3. Only Admins can modify Products, Categories, and Settings.
-4. Users cannot change their own 'role' to 'admin'.
-5. Orders must be linked to the authenticated user.
+## 1. Data Invariants
+- **Products**: Publicly readable. Only admins (specifically the developer) can create/update/delete.
+- **Users**: A user can only read/write their own profile. Admin can read all.
+- **Wishlists**: A user can only read/write their own wishlist.
+- **Orders**: A user can create an order. A user can only read their own orders. Admin can read all orders and update status.
+- **Categories/Settings/Discounts**: Publicly readable. Only admins can modify.
 
-## The "Dirty Dozen" Payloads (Denial Targets)
-1.  **Identity Spoofing**: Creating a wishlist for another user.
-2.  **Privilege Escalation**: Updating user profile to set `role: "admin"`.
-3.  **Product Hijacking**: Non-admin attempting to update a product.
-4.  **Order Spoofing**: Creating an order for another `userId`.
-5.  **Ghost Field Injection**: Adding `isPromoted: true` to a product.
-6.  **ID Poisoning**: Using a 10KB string as a `productId`.
-7.  **Status Skip**: Updating an order status from "pending" to "delivered" as a customer.
-8.  **Anonymous Write**: Attempting to create an order without auth.
-9.  **Email Spoofing**: Attempting admin actions with unverified email.
-10. **PII Leak**: Listing all users as a customer.
-11. **Resource Exhaustion**: Creating a product with a 1MB name.
-12. **Orphaned Order**: Creating an order for a non-existent user.
+## 2. The "Dirty Dozen" Payloads (Denial Tests)
 
-## Test Runner (Logic Definitions)
-The rules must pass these logical constraints (to be implemented in firestore.rules).
+1. **Identity Spoofing - Profile**: Try to write to `/users/someone_else` as a regular user.
+2. **Identity Spoofing - Wishlist**: Try to write to `/wishlists/someone_else` as a regular user.
+3. **Privilege Escalation - Role**: Try to update own role to 'admin' in `/users/{uid}`.
+4. **Bypassing Terminal State - Order**: Try to update an order after it is 'cancelled' or 'delivered'.
+5. **Unauthorized Order View**: Try to read another user's order at `/orders/{otherId}`.
+6. **Shadow Fields - Product**: Try to create a product with an extra field `isPromoted: true`.
+7. **Resource Poisoning - Name**: Try to set a product name with a 2MB string.
+8. **Invalid Relationship - Order**: Try to create an order referencing a non-existent product ID.
+9. **Timestamp Spoofing**: Try to set `createdAt` manually to a past date.
+10. **Global Write - Public Collection**: Try to delete a product as a non-admin.
+11. **PII Leak**: Try to list all users as a regular user.
+12. **Query Scraping**: Try to list all orders without a `userId` filter as a regular user.
+
+## 3. Validation Helpers Logic
+- `isValidId(id)`: Regex check for alphanumeric/hyphens.
+- `isAdmin()`: Check if `request.auth.token.email == "zada.perfumes7@gmail.com"`.
+- `isOwner(uid)`: `request.auth.uid == uid`.
