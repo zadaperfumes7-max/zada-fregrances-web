@@ -7,6 +7,7 @@ import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { toast } from "sonner";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
+import AuthErrorModal from "./AuthErrorModal";
 
 export default function Navbar() {
   const location = useLocation();
@@ -18,6 +19,19 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  const [authError, setAuthError] = useState<{ code?: string; message?: string } | null>(null);
+  const [isAuthErrorModalOpen, setIsAuthErrorModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleAuthError = (e: Event) => {
+      const error = (e as CustomEvent).detail;
+      setAuthError(error);
+      setIsAuthErrorModalOpen(true);
+    };
+    window.addEventListener("firebase-auth-error", handleAuthError);
+    return () => window.removeEventListener("firebase-auth-error", handleAuthError);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -274,6 +288,12 @@ export default function Navbar() {
         </div>
       )}
     </AnimatePresence>
+    
+    <AuthErrorModal 
+      error={authError} 
+      isOpen={isAuthErrorModalOpen} 
+      onClose={() => setIsAuthErrorModalOpen(false)} 
+    />
     </>
   );
 }

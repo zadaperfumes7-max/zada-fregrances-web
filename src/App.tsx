@@ -21,6 +21,7 @@ import CartDrawer from "./components/CartDrawer";
 import CinematicIntro from "./components/CinematicIntro";
 import Wishlist from "./pages/Wishlist";
 import MobileNav from "./components/MobileNav";
+import IframeWarningBanner from "./components/IframeWarningBanner";
 
 function PageWrapper({ children, showNav = true }: { children: React.ReactNode, showNav?: boolean }) {
   return (
@@ -112,6 +113,7 @@ export default function App() {
       <WishlistProvider>
         <CartProvider>
           <div className="relative min-h-screen selection:bg-silver/30 pb-20 md:pb-0">
+          <IframeWarningBanner />
           <AnimatePresence>
             {showIntro && (
               <CinematicIntro onComplete={handleIntroComplete} />

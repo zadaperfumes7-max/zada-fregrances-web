@@ -28,7 +28,30 @@ async function testConnection() {
 testConnection();
 
 // Auth Helpers
-export const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
+export const loginWithGoogle = async () => {
+  const currentHostname = window.location.hostname;
+  const currentOrigin = window.location.origin;
+  console.log('[Firebase Auth] Current Hostname:', currentHostname);
+  console.log('[Firebase Auth] Current Origin:', currentOrigin);
+  
+  try {
+    return await signInWithPopup(auth, googleProvider);
+  } catch (error: any) {
+    console.error('[Firebase Auth Error Details]', {
+      code: error.code,
+      message: error.message,
+      hostname: currentHostname,
+      origin: currentOrigin,
+      authDomain: auth.config?.authDomain
+    });
+    
+    // Dispatch a global event so the UI can catch it and display the diagnostic modal
+    const event = new CustomEvent('firebase-auth-error', { detail: error });
+    window.dispatchEvent(event);
+    
+    throw error;
+  }
+};
 export const logout = () => signOut(auth);
 
 // Error Handling

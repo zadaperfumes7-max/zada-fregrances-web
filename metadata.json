@@ -1,5 +1,8 @@
 {
   "name": "Zada Fragrances",
   "description": "A luxury perfume store with a modern glassmorphism aesthetic.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
